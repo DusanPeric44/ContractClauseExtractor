@@ -16,11 +16,13 @@ def call_deepseek(text: str):
     )
 
     system_prompt = """
-        You extract legal clauses and contract metadata from a text you are prompted with. 
-        Return a strict JSON object with keys 'clauses' and 'metadata'. 
-        'clauses' is an array of objects with 'name', 'text', 'start', 'end'. 
-        'metadata' includes 'parties', 'effective_date', 'termination', 'governing_law', 
-        'jurisdiction', 'payment_terms', 'renewal', 'confidentiality', 'liability_limit'.
+       You extract legal clauses and contract metadata from a text you are prompted with.
+       Return a strict JSON object with keys 'clauses' and 'metadata'.
+       'clauses' is an array of objects with 'name', 'text', 'start', 'end'.
+       Limit each clause 'text' to at most 400 characters.
+       'metadata' includes 'parties', 'effective_date', 'termination', 'governing_law',
+       'jurisdiction', 'payment_terms', 'renewal', 'confidentiality', 'liability_limit'.
+       Output only valid JSON. No prose and no code fences.
     """
 
     user_prompt = text
@@ -32,6 +34,7 @@ def call_deepseek(text: str):
         response = client.chat.completions.create(
             model="deepseek-chat",
             messages=messages,
+            max_tokens=8000,
             response_format={
                 'type': 'json_object'
             }
