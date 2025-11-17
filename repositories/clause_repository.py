@@ -17,3 +17,15 @@ async def insert_many(clauses: List[ClauseBase]) -> None:
             ],
         )
         await db.commit()
+
+
+async def get_by_extraction_id(extraction_id: int):
+    async with aiosqlite.connect(get_db_path()) as db:
+        db.row_factory = aiosqlite.Row
+        await db.execute('PRAGMA foreign_keys = ON')
+        cur = await db.execute(
+            'SELECT id, name, text, start, end, extraction_id FROM clause WHERE extraction_id = ? ORDER BY start ASC',
+            (extraction_id,),
+        )
+        rows = await cur.fetchall()
+        return [dict(row) for row in rows]

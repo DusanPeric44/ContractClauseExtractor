@@ -2,7 +2,6 @@ import aiosqlite
 from models.document import DocumentBase
 from database import get_db_path
 
-
 async def insert(document: DocumentBase) -> int:
     async with aiosqlite.connect(get_db_path()) as db:
         await db.execute('PRAGMA foreign_keys = ON')
