@@ -1,10 +1,11 @@
 from pydantic import BaseModel, Field, field_validator
 
-class Clause(BaseModel):
+class ClauseBase(BaseModel):
     name: str
     text: str = Field(max_length=400)
     start: int = Field(ge=0)
     end: int = Field(ge=0)
+    extraction_id: int
 
     @field_validator('name', 'text', mode="before")
     def _strip(cls, v):
@@ -22,3 +23,6 @@ class Clause(BaseModel):
         if s is not None and v < s:
             raise ValueError('end must be greater than or equal to start')
         return v
+
+class Clause(ClauseBase):
+    id: int

@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel, field_validator
 
-class Metadata(BaseModel):
+class MetadataBase(BaseModel):
     parties: List[str] = []
     effective_date: Optional[str] = None
     termination: Optional[str] = None
@@ -11,6 +11,7 @@ class Metadata(BaseModel):
     renewal: Optional[str] = None
     confidentiality: Optional[str] = None
     liability_limit: Optional[str] = None
+    extraction_id: int
 
     @field_validator('parties', mode="before")
     def _normalize_parties(cls, v):
@@ -29,3 +30,6 @@ class Metadata(BaseModel):
     @field_validator('effective_date', 'termination', 'governing_law', 'jurisdiction', 'payment_terms', 'renewal', 'confidentiality', 'liability_limit', mode="before")
     def _strip_strings(cls, v):
         return v.strip() if isinstance(v, str) else v
+
+class Metadata(MetadataBase):
+    id: int
