@@ -33,13 +33,14 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 ## Demo
 
 - End-to-end script
+
   - Run the API locally: `uvicorn main:app --reload --port 8001`
   - Execute demo: `python demo_e2e.py path/to/sample.pdf --api http://localhost:8001`
   - The script uploads the PDF, prints the extracted payload, lists extractions, and fetches extractions by the first returned `document_id`.
 
 - Docker
-  - Start container: `docker run -e DB_PATH=data.db -e DEEPSEEK_API_KEY=<your_api_key> -p 8080:80 contract-clause-extractor`
-  - Execute demo against container: `python demo_e2e.py path/to/sample.pdf --api http://localhost:8080`
+  - Start container: `docker run -e DB_PATH=data.db -e DEEPSEEK_API_KEY=<your_api_key> -p 80:80 contract-clause-extractor`
+  - Execute demo against container: `python demo_e2e.py path/to/sample.pdf --api http://localhost`
 
 ## API Overview
 

@@ -1,7 +1,6 @@
 import os
 import argparse
 import requests
-from dotenv import load_dotenv
 
 
 def run(pdf_path: str, api_base: str):
@@ -27,22 +26,8 @@ def run(pdf_path: str, api_base: str):
         print(by_doc)
 
 if __name__ == "__main__":
-    load_dotenv()
     parser = argparse.ArgumentParser()
-    
-    demo_pdf = os.getenv("DEMO_PDF")
-    if not demo_pdf:
-        raise SystemExit("Missing DEMO_PDF. Set it in .env or provide --pdf.")
-
-    api_base = os.getenv("API_BASE", "http://localhost:8001")
-    if not api_base:
-        raise SystemExit("Missing API_BASE. Set it in .env or provide --api.")
-    
-    parser.add_argument("--pdf", default=demo_pdf)
-    parser.add_argument("--api", default=api_base)
-
+    parser.add_argument("pdf", help="Path to PDF file")
+    parser.add_argument("--api", default="http://localhost:8001", help="API base URL")
     args = parser.parse_args()
-
-    if not args.pdf:
-        raise SystemExit("Missing --pdf. Provide a path or set DEMO_PDF.")
     run(args.pdf, args.api)
