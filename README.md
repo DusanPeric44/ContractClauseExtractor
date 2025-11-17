@@ -18,7 +18,7 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
   3. Create `.env` in project root and set
      - `DB_PATH=./data.db` (or any writable path to your SQLite file)
      - `DEEPSEEK_API_KEY=<your_api_key>`
-  4. Start the server: `uvicorn main:app --reload --port 8001`
+  4. Start the server: `uvicorn main:app --port 8001`
   5. API base: `http://localhost:8001`
 
 - Docker run
@@ -34,7 +34,7 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 
 - End-to-end script
 
-  - Run the API locally: `uvicorn main:app --reload --port 8001`
+  - Run the API locally: `uvicorn main:app --port 8001`
   - Execute demo: `python demo_e2e.py path/to/sample.pdf --api http://localhost:8001`
   - The script uploads the PDF, prints the extracted payload, lists extractions, and fetches extractions by the first returned `document_id`.
 
