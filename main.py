@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 
 from routers import extract, extractions
@@ -9,4 +10,5 @@ app = FastAPI(title="Contract Clause Extractor",
 app.include_router(extract.router, prefix="/extract", tags=["extract"])
 app.include_router(extractions.router, prefix="/extractions", tags=["extractions"])
 
-
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)
