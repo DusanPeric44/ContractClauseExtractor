@@ -89,7 +89,9 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 
   - Improve text extraction for complex or scanned documents (OCR).
 
-- LLM input/output hardening
+- Reading Different File Types
+
+  - Add support for non-PDF file types (e.g., docx, txt) by extracting text.
 
   - Validate schema strictly before persisting; add retries and guardrails.
   - Add rate limiting and observability (logging/metrics) for LLM calls.
@@ -111,3 +113,55 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 - `models/` contains Pydantic models and validators.
 - `database.py` contains DB path resolution and schema creation.
 - `openai_client.py` contains DeepSeek call logic.
+
+## Architecture Diagram
+
+```
++----------------+           +-------------------------------+
+|    Client      |  POST     |   FastAPI Router: /api/extract |
+| (Browser/CLI)  |---------> | - Validate PDF upload          |
+|                |           | - Read PDF via pypdf           |
+|                |           | - Call LLM (DeepSeek)          |
+|                |           | - Pass payload to Service      |
++----------------+           +---------------+----------------+
+                                                |
+                                                v
+                                   +---------------------------+
+                                   |  Service Layer            |
+                                   |  save_extraction          |
+                                   |  - insert document        |
+                                   |  - insert extraction      |
+                                   |  - insert clauses (bulk)  |
+                                   |  - insert metadata        |
+                                   +---------------+-----------+
+                                                   |
+                                                   v
+                              +------------------------------+
+                              |        Repository Layer       |
+                              |  document/extraction/clause/  |
+                              |  metadata repositories        |
+                              +---------------+--------------+
+                                              |
+                                              v
+                                  +---------------------+
+                                  |      SQLite DB      |
+                                  |  via aiosqlite      |
+                                  +---------------------+
+
+
+Retrieval:
+
+Client GET /api/extractions/{document_id} or /api/extractions?pageNum=&pageSize=
+    -> FastAPI Router
+        -> Service (get_by_document_id / list_extractions)
+            -> Repositories (query extraction + clauses + metadata)
+                -> Compose Pydantic models and return JSON
+
+Startup:
+    FastAPI lifespan -> `create_database()` -> ensure tables/indexes exist
+
+Config:
+    `.env` or container env
+      - `DB_PATH` (SQLite file path)
+      - `DEEPSEEK_API_KEY` (DeepSeek API key)
+```
