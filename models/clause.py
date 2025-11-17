@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 class Clause(BaseModel):
     name: str
@@ -6,17 +6,17 @@ class Clause(BaseModel):
     start: int = Field(ge=0)
     end: int = Field(ge=0)
 
-    @validator('name', 'text', pre=True)
+    @field_validator('name', 'text', mode="before")
     def _strip(cls, v):
         return v.strip() if isinstance(v, str) else v
 
-    @validator('name')
+    @field_validator('name')
     def _non_empty_name(cls, v):
         if not v:
             raise ValueError('name must not be empty')
         return v
 
-    @validator('end')
+    @field_validator('end')
     def _end_ge_start(cls, v, values):
         s = values.get('start')
         if s is not None and v < s:
