@@ -24,8 +24,8 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 - Docker run
 
   1. Build: `docker build -t contract-clause-extractor .`
-  2. Run: `docker run -e DB_PATH=/code/data.db -e DEEPSEEK_API_KEY=<your_api_key> -p 80:80 contract-clause-extractor`
-  3. API base: `http://localhost:80`
+  2. Run: `docker run -e DB_PATH=data.db -e DEEPSEEK_API_KEY=<your_api_key> -p 80:80 contract-clause-extractor`
+  3. API base: `http://localhost`
 
 - Database initialization
   - On application startup, `create_database()` runs and creates tables and indexes if needed.
