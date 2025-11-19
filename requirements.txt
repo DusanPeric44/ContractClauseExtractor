@@ -7,3 +7,4 @@ dotenv
 openai
 pypdf
 requests
+python-docx
