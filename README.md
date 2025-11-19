@@ -1,13 +1,13 @@
 # Contract Clause Extractor
 
-Extracts clauses and contract metadata from PDF documents using an LLM, stores them in SQLite, and exposes a FastAPI API to submit documents and query extractions.
+Extracts clauses and contract metadata from PDF and DOCX documents using an LLM, stores them in SQLite, and exposes a FastAPI API to submit documents and query extractions.
 
 ## Setup Instructions
 
 - Prerequisites
 
   - Python 3.9+
-  - `uvicorn`, `fastapi`, `pydantic`, `aiosqlite`, `python-multipart`, `dotenv`, `openai`, `pypdf` (installed via `requirements.txt`)
+  - `uvicorn`, `fastapi`, `pydantic`, `aiosqlite`, `python-multipart`, `dotenv`, `openai`, `pypdf`, `python-docx`, `requests` (installed via `requirements.txt`)
 
 - Local run
 
@@ -46,10 +46,11 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 
 - `POST /api/extract`
 
-  - Accepts a PDF upload `multipart/form-data` with field `document`
+  - Accepts a PDF or DOCX upload `multipart/form-data` with field `document`
   - Returns the extracted JSON payload and persists it
   - Example:
     - `curl -X POST -F "document=@sample.pdf" http://localhost:8001/api/extract`
+    - `curl -X POST -F "document=@sample.docx" http://localhost:8001/api/extract`
 
 - `GET /api/extractions?pageNum=<n>&pageSize=<m>`
 
@@ -103,7 +104,7 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 
 - Reading Different File Types
 
-  - Add support for non-PDF file types (e.g., docx, txt) by extracting text.
+  - Additional formats (e.g., plain text, legacy `.doc`) can be added in the same service.
 
   - Validate schema strictly before persisting; add retries and guardrails.
   - Add rate limiting and observability (logging/metrics) for LLM calls.
@@ -131,8 +132,8 @@ Extracts clauses and contract metadata from PDF documents using an LLM, stores t
 ```
 +----------------+           +-------------------------------+
 |    Client      |  POST     |   FastAPI Router: /api/extract |
-| (Browser/CLI)  |---------> | - Validate PDF upload          |
-|                |           | - Read PDF via pypdf           |
+| (Browser/CLI)  |---------> | - Validate upload              |
+|                |           | - Text extraction service      |
 |                |           | - Call LLM (DeepSeek)          |
 |                |           | - Pass payload to Service      |
 +----------------+           +---------------+----------------+
