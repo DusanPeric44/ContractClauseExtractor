@@ -7,7 +7,7 @@ Extracts clauses and contract metadata from PDF and DOCX documents using an LLM,
 - Prerequisites
 
   - Python 3.9+
-  - `uvicorn`, `fastapi`, `pydantic`, `aiosqlite`, `python-multipart`, `dotenv`, `openai`, `pypdf`, `python-docx`, `requests` (installed via `requirements.txt`)
+  - `uvicorn`, `fastapi`, `pydantic`, `aiosqlite`, `python-multipart`, `dotenv`, `openai`, `pypdf`, `python-docx`, `requests`, `pytest` (installed via `requirements.txt`)
 
 - Local run
 
@@ -35,12 +35,14 @@ Extracts clauses and contract metadata from PDF and DOCX documents using an LLM,
 - End-to-end script
 
   - Run the API locally: `uvicorn main:app --port 8001`
-  - Execute demo: `python demo_e2e.py path/to/sample.pdf --api http://localhost:8001`
+  - Execute demo (PDF): `python demo_e2e.py path/to/sample.pdf --api http://localhost:8001`
+  - Execute demo (DOCX): `python demo_e2e.py path/to/sample.docx --api http://localhost:8001`
   - The script uploads the PDF, prints the extracted payload, lists extractions, and fetches extractions by the first returned `document_id`.
 
 - Docker
   - Start container: `docker run -e DB_PATH=data.db -e DEEPSEEK_API_KEY=<your_api_key> -p 80:80 contract-clause-extractor`
-  - Execute demo against container: `python demo_e2e.py path/to/sample.pdf --api http://localhost`
+  - Execute demo against container (PDF): `python demo_e2e.py path/to/sample.pdf --api http://localhost`
+  - Execute demo against container (DOCX): `python demo_e2e.py path/to/sample.docx --api http://localhost`
 
 ## API Overview
 
@@ -58,6 +60,19 @@ Extracts clauses and contract metadata from PDF and DOCX documents using an LLM,
 
 - `GET /api/extractions/{document_id}`
   - Lists extractions associated with a specific `document_id`
+
+## Tests
+
+- Install dependencies: `pip install -r requirements.txt`
+- Run tests: `pytest -q`
+- What tests cover:
+  - `POST /api/extract` for PDF and DOCX uploads
+  - `GET /api/extractions?pageNum=&pageSize=` listing
+  - `GET /api/extractions/{document_id}` retrieval
+  - Unsupported content type returns `400`
+- Notes:
+  - Tests monkeypatch the LLM call and text extraction service to avoid external APIs and file parsing.
+  - Tests set `DB_PATH` to a temporary SQLite file automatically; no `.env` is required to run.
 
 ## Design Decisions and Tradeoffs
 
@@ -111,7 +126,6 @@ Extracts clauses and contract metadata from PDF and DOCX documents using an LLM,
 
 - Testing and CI
 
-  - Unit tests for services and repositories.
   - Contract tests for routers; add lint/type-check steps in CI.
 
 - Configuration and ops
